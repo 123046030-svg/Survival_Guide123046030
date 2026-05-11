@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>{{ titulo }}</h2>
+<div class="contenido-camara">
+    {% for linea in contenido %}
+        <p>{{ linea }}</p>
+    {% endfor %}
+</div>
+
+{% if not quiz_pasado %}
+    <div class="quiz">
+        <h3>🧩 Resuelve los enigmas para continuar</h3>
+        <form method="POST" action="{{ url_for('evaluar_quiz', sec=sec) }}">
+            {% for i, pregunta in enumerate(preguntas) %}
+                <fieldset>
+                    <legend>{{ pregunta.texto }}</legend>
+                    {% for opcion in pregunta.opciones %}
+                        <label>
+                            <input type="radio" name="q{{ i }}" value="{{ loop.index0 }}" required>
+                            {{ opcion }}
+                        </label><br>
+                    {% endfor %}
+                </fieldset>
+            {% endfor %}
+            <button type="submit" class="btn"> Comprobar respuestas</button>
+        </form>
+    </div>
+{% elif not compromiso_activado %}
+    <div class="compromiso">
+        <h3> Sella tu compromiso</h3>
+        <p>Has demostrado tu conocimiento. Ahora asume el compromiso de cumplir con esta cámara.</p>
+        <form method="POST" action="{{ url_for('marcar_compromiso', sec=sec) }}">
+            <label>
+                <input type="checkbox" name="compromiso" value="si" required>
+                Me comprometo a respetar y cumplir con lo establecido en esta sección.
+            </label>
+            <button type="submit" class="btn"> Marcar compromiso y avanzar</button>
+        </form>
+    </div>
+{% else %}
+    <div class="completado">
+        <h3> ¡Cámara conquistada!</h3>
+        <p>Ya has superado este reto. Puedes regresar al <a href="{{ url_for('index') }}">mapa</a>.</p>
+    </div>
+{% endif %}
+{% endblock %}

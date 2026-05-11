@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> Aventura Programación Móvil</title>
+    <style>
+        body { background: #1a1a2e; color: white; font-family: sans-serif; max-width: 800px; margin: auto; padding: 20px; }
+        .zona { border: 2px solid #0f3460; margin: 10px 0; padding: 10px; border-radius: 10px; }
+        .bloqueada { opacity: 0.5; }
+        .pendiente_quiz { border-color: #e94560; }
+        .pendiente_compromiso { border-color: #f5c542; }
+        .completada { border-color: #2ecc71; }
+        button, .btn { background: #e94560; color: white; padding: 10px; border: none; border-radius: 5px; cursor: pointer; text-decoration: none; display: inline-block; margin: 5px; }
+        .btn-secondary { background: #0f3460; }
+        input[type="radio"] { margin-right: 5px; }
+        fieldset { border: 1px solid #0f3460; margin: 10px 0; padding: 10px; }
+        legend { color: #e94560; }
+        .flash { padding: 10px; margin: 10px 0; border-radius: 5px; }
+        .success { background: #2ecc71; color: black; }
+        .danger { background: #e74c3c; }
+        .warning { background: #f39c12; }
+        .info { background: #3498db; }
+    </style>
+</head>
+<body>
+    <h1> Programación Móvil – La Aventura</h1>
+    <p><a href="{{ url_for('mapa') }}"> Mapa</a> | <a href="{{ url_for('reiniciar') }}"> Reiniciar</a></p>
+
+    <!-- Mostrar mensajes flash -->
+    {% with mensajes = get_flashed_messages(with_categories=true) %}
+        {% if mensajes %}
+            {% for cat, msg in mensajes %}
+                <div class="flash {{ cat }}">{{ msg }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <!-- Si estamos mostrando una zona concreta -->
+    {% if mostrar_zona %}
+        <h2>{{ zona.nombre }}</h2>
+        {% for linea in zona.texto %}
+            <p>{{ linea }}</p>
+        {% endfor %}
+        <hr>
+
+        {% if not estado.quiz_ok %}
+            <h3> Enigma</h3>
+            <form method="POST" action="{{ url_for('evaluar_quiz', num=zona_activa) }}">
+                {% for pregunta in zona.preguntas %}
+                    {% set idx = loop.index0 %}
+                    <fieldset>
+                        <legend>{{ pregunta.pregunta }}</legend>
+                        {% for opcion in pregunta.opciones %}
+                            <label>
+                                <input type="radio" name="q{{ idx }}" value="{{ loop.index0 }}" required>
+                                {{ opcion }}
+                            </label><br>
+                        {% endfor %}
+                    </fieldset>
+                {% endfor %}
+                <button type="submit"> Comprobar respuestas</button>
+            </form>
+        {% elif not estado.compromiso %}
+            <h3> Compromiso</h3>
+            <p>Has demostrado conocimiento. Ahora asume el compromiso:</p>
+            <form method="POST" action="{{ url_for('marcar_compromiso', num=zona_activa) }}">
+                <label>
+                    <input type="checkbox" name="compromiso" value="si" required>
+                    Me comprometo a cumplir con lo establecido en esta zona.
+                </label><br><br>
+                <button type="submit"> Sellar compromiso y avanzar</button>
+            </form>
+        {% else %}
+            <h3> Zona completada</h3>
+            <p>¡Ya has superado este desafío!</p>
+        {% endif %}
+
+        <p><a href="{{ url_for('mapa') }}" class="btn btn-secondary">⬅ Volver al mapa</a></p>
+
+    {% else %}
+        <!-- Mapa de zonas -->
+        <h2> Mapa del reino</h2>
+        {% for z in zonas_info %}
+            <div class="zona {{ z.estado_str }}">
+                <h3>{{ z.nombre }}</h3>
+                {% if not z.desbloqueada %}
+                    <p> Bloqueada (completa la anterior)</p>
+                {% elif z.estado_str == 'pendiente_quiz' %}
+                    <a href="{{ url_for('zona', num=z.num) }}" class="btn"> Entrar (resolver enigmas)</a>
+                {% elif z.estado_str == 'pendiente_compromiso' %}
+                    <a href="{{ url_for('zona', num=z.num) }}" class="btn"> Firmar compromiso</a>
+                {% elif z.estado_str == 'completada' %}
+                    <a href="{{ url_for('zona', num=z.num) }}" class="btn"> Revisar</a>
+                {% endif %}
+            </div>
+        {% endfor %}
+    {% endif %}
+</body>
+</html>

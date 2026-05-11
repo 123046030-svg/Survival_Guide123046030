@@ -1,0 +1,63 @@
+body {
+    background: #1a1a2e;
+    color: #eee;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+}
+.container {
+    max-width: 900px;
+    margin: auto;
+    padding: 20px;
+}
+header {
+    text-align: center;
+    border-bottom: 2px solid #e94560;
+    margin-bottom: 20px;
+}
+nav a {
+    color: #e94560;
+    text-decoration: none;
+    margin: 0 10px;
+}
+.flashes {
+    list-style: none;
+    padding: 0;
+}
+.flashes .success { color: #2ecc71; }
+.flashes .error { color: #e74c3c; }
+.grid-camaras {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+}
+.camara {
+    background: #16213e;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+}
+.camara.bloqueado {
+    opacity: 0.5;
+}
+.camara.completado {
+    border: 2px solid #2ecc71;
+}
+.btn {
+    display: inline-block;
+    background: #e94560;
+    color: white;
+    padding: 10px 15px;
+    text-decoration: none;
+    border-radius: 5px;
+    margin-top: 10px;
+    border: none;
+    cursor: pointer;
+}
+.contenido-camara p {
+    margin: 5px 0;
+}
+.quiz fieldset {
+    margin-bottom: 15px;
+    border: 1px solid #0f3460;
+    padding: 10px;
+}
